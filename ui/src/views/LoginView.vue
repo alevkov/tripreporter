@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2023 froggie <legal@frogg.ie>
-
-SPDX-License-Identifier: OSL-3.0
--->
-
 <template>
   <div class="login">
     <div v-if="!store.activeSession" class="no-session">
@@ -11,31 +5,7 @@ SPDX-License-Identifier: OSL-3.0
         <subjective-report-link/>
         account ✨
       </h1>
-
-      <div class="DefaultView__form">
-        <FormKit type="form" @submit="submitForm" #default="{ state: { errors } }" :actions="false">
-          <FormKit
-              type="text"
-              name="username"
-              id="username"
-              label="Username"
-              validation="required"
-              placeholder="lyv76"
-              :value="store.lastUsername"
-          />
-
-          <FormKit
-              type="password"
-              name="password"
-              id="password"
-              label="Password"
-              validation="required"
-              placeholder="----------"
-          />
-
-          <FormKit type="submit" label="Login" data-next="true" :disabled="errors && submitting"/>
-        </FormKit>
-      </div>
+      <LoginForm :onSubmit="handleLogin" :lastUsername="lastUsername" />
     </div>
     <div v-else>
       <already-logged-in/>
@@ -43,51 +13,53 @@ SPDX-License-Identifier: OSL-3.0
   </div>
 </template>
 
-<script>
-import LayoutDefault from "@/layouts/LayoutDefault.vue";
-
-export default {
-  name: "LoginView",
-  created() {
-    this.$emit('update:layout', LayoutDefault);
-  }
-}
-</script>
 
 <script setup>
-import { inject, ref } from 'vue'
-import { handleMessageError, setMessage } from '@/assets/lib/message_util';
-import { useSessionStore } from '@/assets/lib/sessionstore'
+import LoginForm from "@/components/LoginForm.vue";
 import AlreadyLoggedIn from "@/components/AlreadyLoggedIn.vue";
 import SubjectiveReportLink from "@/components/SubjectiveReportLink.vue";
+import { ref, inject } from 'vue';  // Import from 'vue' instead of '@vue/runtime-core'
+import { useSessionStore } from '@/assets/lib/sessionstore';
+import { handleMessageError, setMessage } from '@/assets/lib/message_util';
 
-const axios = inject('axios')
+
+const axios = inject('axios');
 const store = useSessionStore();
 
 const messageSuccess = "Successfully logged in!";
-let success = ref(false);
-let submitting = ref(false);
+const success = ref(false);
+const submitting = ref(false);
 
-const submitForm = async (fields) => {
+const handleLogin = async (fields) => {
   store.lastUsername = fields.username;
   submitting.value = true;
 
-  // router is intentionally undefined here, because we don't actually want to redirect but do want a location set for hiding success message
-  await axios.post('/account/login', fields).then(function (response) {
+  try {
+    const response = await axios.post('/account/login', fields);
     success.value = response.status === 200;
     submitting.value = false;
     setMessage(response.data.msg, messageSuccess, success.value, undefined, "/login");
-  }).catch(function (error) {
-    success.value = error.response.status === 200;
+  } catch (error) {  // 'error' is now defined as 'err'
+    success.value = error.response && error.response.status === 200;
     submitting.value = false;
     setMessage(error.response.data.msg, messageSuccess, success.value, undefined, "/login");
-    handleMessageError(error);
-  })
+    handleMessageError(error)
+  }
 
   if (success.value) {
-    store.updateSession(axios); // TODO: Make login UX less confusing
+    store.updateSession(axios);
   }
-}
+};
+</script>
+
+<script>
+export default {
+  components: {
+    LoginForm,
+    AlreadyLoggedIn,
+    SubjectiveReportLink
+  }
+};
 </script>
 
 <style>
