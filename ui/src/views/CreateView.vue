@@ -57,100 +57,7 @@ SPDX-License-Identifier: OSL-3.0
                 />
               </template>
             </FormKit>
-            <FormKit type="step" name="subject_info" v-model="createStore.reportSubject">
-              <FormKit
-                  type="number"
-                  min="0"
-                  id="subject_age"
-                  name="subject_age"
-                  label="Age"
-                  help="(optional)"
-                  v-model="createStore.subjectInfo.age"
-              />
 
-              <FormKit
-                  type="taglist"
-                  id="subject_gender"
-                  name="subject_gender"
-                  label="Gender"
-                  :options="optionsGender"
-                  :allow-new-values="true"
-                  max="1"
-                  help="(optional) Custom values are supported."
-                  v-model="createStore.subjectInfo.gender"
-              />
-
-              <FormKit
-                  type="toggle"
-                  name="use_imperial"
-                  label="Use imperial for units?"
-                  v-model="createStore.useImperial"
-              />
-
-              <div v-show="!createStore.useImperial">
-                <FormKit
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    id="subject_height_cm"
-                    name="subject_height_cm"
-                    label="Height (cm)"
-                    help="(optional)"
-                    v-model="createStore.subjectInfo.heightCm"
-                />
-                <FormKit
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    id="subject_weight_kg"
-                    name="subject_weight_kg"
-                    label="Weight (kg)"
-                    help="(optional)"
-                    v-model="createStore.subjectInfo.weightKg"
-                />
-              </div>
-              <div v-show="createStore.useImperial">
-                <FormKit
-                    type="number"
-                    min="0"
-                    id="subject_height_ft"
-                    name="subject_height_ft"
-                    label="Height (ft)"
-                    help="(optional)"
-                    v-model="createStore.subjectInfo.heightFt"
-                />
-                <FormKit
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    id="subject_height_in"
-                    name="subject_height_in"
-                    label="Height (in)"
-                    help="(optional)"
-                    v-model="createStore.subjectInfo.heightIn"
-                />
-                <FormKit
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    id="subject_weight_lbs"
-                    name="subject_weight_lbs"
-                    label="Weight (lbs)"
-                    help="(optional)"
-                    v-model="createStore.subjectInfo.weightLbs"
-                />
-              </div>
-              <!--suppress VueUnrecognizedSlot -->
-              <template #stepNext="{ handlers, node }">
-                <FormKit
-                    :classes="{ input: { 'formkit-input-no-margin': true, 'formkit-input-justify-right': false } }"
-                    type="button"
-                    @click="handlers.incrementStep(1, node.context)()"
-                    label="Next"
-                    data-next="true"
-                />
-              </template>
-            </FormKit>
             <FormKit type="step" name="medication_info" v-model="createStore.reportMedication">
               <FormKit
                   type="repeater"
@@ -303,8 +210,6 @@ import AuthWrapper from "@/components/AuthWrapper.vue";
 const router = inject('router')
 const axios = inject('axios')
 const createStore = useCreateStore();
-
-const optionsGender = ["Male", "Female", "Nonbinary"];
 
 const messageSuccess = "Successfully created report!";
 let success = ref(false);

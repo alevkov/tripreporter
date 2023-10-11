@@ -13,6 +13,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   assetsDir: "static",
   devServer: {
+    proxy: 'http://localhost:3000',
     port: process.env.DEV_PORT,
-  }
+  },
 })

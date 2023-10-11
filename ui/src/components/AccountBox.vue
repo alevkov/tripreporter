@@ -30,8 +30,96 @@ SPDX-License-Identifier: OSL-3.0
                     'Profile': `/profile/${getStore().accountJson.id}`
                   }"
               />
+              <div class="LayoutAccount__personal_details">
+                <h2>Update Personal Details</h2>
+                <FormKit type="form" name="subject_info" v-model="getCreateStore().reportSubject">
+              <FormKit
+                  type="number"
+                  min="0"
+                  id="subject_age"
+                  name="subject_age"
+                  label="Age"
+                  help="(optional)"
+                  v-model="getCreateStore().subjectInfo.age"
+              />
+
+              <FormKit
+                  type="taglist"
+                  id="subject_gender"
+                  name="subject_gender"
+                  label="Gender"
+                  :options="getOptionsGender()"
+                  :allow-new-values="true"
+                  max="1"
+                  help="(optional) Custom values are supported."
+                  v-model="getCreateStore().subjectInfo.gender"
+              />
+
+              <FormKit
+                  type="toggle"
+                  name="use_imperial"
+                  label="Use imperial for units?"
+                  v-model="getCreateStore().useImperial"
+              />
+
+              <div v-show="!getCreateStore().useImperial">
+                <FormKit
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    id="subject_height_cm"
+                    name="subject_height_cm"
+                    label="Height (cm)"
+                    help="(optional)"
+                    v-model="getCreateStore().subjectInfo.heightCm"
+                />
+                <FormKit
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    id="subject_weight_kg"
+                    name="subject_weight_kg"
+                    label="Weight (kg)"
+                    help="(optional)"
+                    v-model="getCreateStore().subjectInfo.weightKg"
+                />
+              </div>
+              <div v-show="getCreateStore().useImperial">
+                <FormKit
+                    type="number"
+                    min="0"
+                    id="subject_height_ft"
+                    name="subject_height_ft"
+                    label="Height (ft)"
+                    help="(optional)"
+                    v-model="getCreateStore().subjectInfo.heightFt"
+                />
+                <FormKit
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    id="subject_height_in"
+                    name="subject_height_in"
+                    label="Height (in)"
+                    help="(optional)"
+                    v-model="getCreateStore().subjectInfo.heightIn"
+                />
+                <FormKit
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    id="subject_weight_lbs"
+                    name="subject_weight_lbs"
+                    label="Weight (lbs)"
+                    help="(optional)"
+                    v-model="getCreateStore().subjectInfo.weightLbs"
+                />
+              </div>
+            </FormKit>
+              </div>
 
               <div class="LayoutAccount_buttons">
+                
                 <FormKit
                     type="button"
                     class="LayoutAccount__buttons_button"
@@ -95,6 +183,8 @@ SPDX-License-Identifier: OSL-3.0
             />
           </div>
         </FormKit>
+
+          
       </div>
     </div>
   </div>
@@ -104,9 +194,12 @@ SPDX-License-Identifier: OSL-3.0
 import HeaderRowBox from "@/components/HeaderRowBox.vue";
 import { useAccountStore } from "@/assets/lib/accountstore";
 import { useSessionStore } from "@/assets/lib/sessionstore";
+import { useCreateStore } from "@/assets/lib/createstore";
+const optionsGender = ["Male", "Female", "Nonbinary"];
 
 const store = useAccountStore();
 const sessionStore = useSessionStore();
+const createStore = useCreateStore()
 
 export default {
   name: "AccountBox",
@@ -120,6 +213,12 @@ export default {
     },
     isLoaded() {
       return store.isLoaded()
+    },
+    getOptionsGender() {
+      return optionsGender
+    },
+    getCreateStore() {
+      return createStore
     }
   }
 }
@@ -210,32 +309,49 @@ if (ranSetup !== true) {
   })
 }
 </script>
+
 <style scoped>
 .LayoutAccount__main {
-    text-align: left;
+  text-align: left;
 }
 
 .LayoutAccount__main h1 {
-    text-align: center;
+  text-align: center;
 }
 
-.LayoutAccount__account {
-    max-width: 25em;
-    margin: auto;
+.LayoutAccount__account,
+.LayoutAccount__personal_details {
+  max-width: 25em;
+  margin: auto;
 }
 
-.LayoutAccount__info_entry_box {
-    margin-bottom: 1em;
+.LayoutAccount__info_entry_box,
+.LayoutAccount__personal_details {
+  display: flex;
+  flex-direction: column;
+  font-size: 1em;
+}
+
+.LayoutAccount__personal_details h2 {
+  font-size: 1.2em;
+  align-self: center;
 }
 
 .LayoutAccount_buttons {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: left;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .LayoutAccount__buttons_button {
-    flex-grow: 1;
+  flex-grow: 1;
+}
+
+/* Additional style for Delete Account button */
+.LayoutAccount__buttons_button--delete {
+  background-color: var(--tr-error);
 }
 </style>
+
+

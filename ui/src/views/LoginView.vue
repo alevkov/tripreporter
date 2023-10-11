@@ -13,15 +13,30 @@
   </div>
 </template>
 
+<script>
+import LayoutDefault from "@/layouts/LayoutDefault.vue";
+
+export default {
+  name: "LoginView",
+  created() {
+    console.log("this herer")
+    this.$emit('update:layout', LayoutDefault);
+  },
+  components: {
+    LoginForm,
+    AlreadyLoggedIn,
+    SubjectiveReportLink
+  },
+}
+</script>
 
 <script setup>
+import {  ref, inject } from 'vue';
 import LoginForm from "@/components/LoginForm.vue";
 import AlreadyLoggedIn from "@/components/AlreadyLoggedIn.vue";
 import SubjectiveReportLink from "@/components/SubjectiveReportLink.vue";
-import { ref, inject } from 'vue';  // Import from 'vue' instead of '@vue/runtime-core'
 import { useSessionStore } from '@/assets/lib/sessionstore';
 import { handleMessageError, setMessage } from '@/assets/lib/message_util';
-
 
 const axios = inject('axios');
 const store = useSessionStore();
@@ -36,28 +51,19 @@ const handleLogin = async (fields) => {
 
   try {
     const response = await axios.post('/account/login', fields);
+    console.log(response)
     success.value = response.status === 200;
     submitting.value = false;
     setMessage(response.data.msg, messageSuccess, success.value, undefined, "/login");
-  } catch (error) {  // 'error' is now defined as 'err'
+  } catch (error) {
     success.value = error.response && error.response.status === 200;
     submitting.value = false;
     setMessage(error.response.data.msg, messageSuccess, success.value, undefined, "/login");
-    handleMessageError(error)
+    handleMessageError(error);
   }
 
   if (success.value) {
     store.updateSession(axios);
-  }
-};
-</script>
-
-<script>
-export default {
-  components: {
-    LoginForm,
-    AlreadyLoggedIn,
-    SubjectiveReportLink
   }
 };
 </script>
